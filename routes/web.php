@@ -14,11 +14,11 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Auth::routes();
+
+Route::get('/forgot-password', function () {
+    return view('auth.forgot');
+});
 Route::get('/', [HomeController::class,'index'])->name('home');
 
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
