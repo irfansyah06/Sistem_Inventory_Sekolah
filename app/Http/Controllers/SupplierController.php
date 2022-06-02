@@ -70,7 +70,22 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
+        //melakukan validasi data
+        $request->validate([
+            'kode' => 'required',
+            'nama' => 'required',
+            'alamat' => 'required',
+            'telp' => 'required',
+            'kota' => 'required',
+            'penyedia' => 'required',
+            ]);
 
+            //fungsi eloquent untuk menambah data
+            Supplier::create($request->all());
+
+            //jika data berhasil ditambahkan, akan kembali ke halaman utama
+            Alert::success('Success', 'Data Supplier Berhasil Ditambahkan');
+            return redirect()->route('supplier.index');
     }
 
     /**
@@ -81,7 +96,9 @@ class SupplierController extends Controller
      */
     public function show($kode)
     {
-
+        //menampilkan detail data dengan menemukan berdasarkan kode supplier
+        $supplier = Supplier::find($kode);
+        return view('Supplier.show', compact('supplier'));
     }
 
     /**
@@ -92,7 +109,9 @@ class SupplierController extends Controller
      */
     public function edit($kode)
     {
-
+        //menampilkan detail data dengan menemukan berdasarkan kode supplier untuk diedit
+        $supplier = Supplier::find($kode);
+        return view('Supplier.edit', compact('supplier'));
     }
 
     /**
@@ -104,7 +123,22 @@ class SupplierController extends Controller
      */
     public function update(Request $request, $kode)
     {
+        //melakukan validasi data
+        $request->validate([
+            'kode' => 'required',
+            'nama' => 'required',
+            'alamat' => 'required',
+            'telp' => 'required',
+            'kota' => 'required',
+            'penyedia' => 'required',
+            ]);
 
+        //fungsi eloquent untuk mengupdate data inputan kita
+            Supplier::find($kode)->update($request->all());
+
+        //jika data berhasil diupdate, akan kembali ke halaman utama
+            Alert::success('Success', 'Data Supplier Berhasil Diupdate');
+            return redirect()->route('supplier.index');
     }
 
     /**
@@ -115,6 +149,15 @@ class SupplierController extends Controller
      */
     public function destroy($kode)
     {
-
+        //fungsi eloquent untuk menghapus data
+        Supplier::find($kode)->delete();
+        Alert::success('Success', 'Data Supplier Berhasil Dihapus');
+        return redirect()->route('supplier.index');
+    }
+    public function laporan()
+    {
+        $supplier = Supplier::all();
+        $pdf = PDF::loadview('Supplier.laporan', compact('supplier'));
+        return $pdf->stream();
     }
 }
