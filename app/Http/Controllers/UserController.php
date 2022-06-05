@@ -49,8 +49,7 @@ class UserController extends Controller
     {
         return view('User.create');
     }
-
-    /**
+ /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -58,7 +57,34 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        //melakukan validasi data
+        $request->validate([
+            'name' => 'required',
+            'username' => 'required',
+            'email' => 'required',
+            'password' => 'required',
+            'gambar' => 'required',
+            'role' => 'required',
+            ]);
 
+            if ($request->file('gambar')) {
+                $image_name = $request->file('gambar')->store('images', 'public');
+            }
+
+            //fungsi eloquent untuk menambah data
+            $user = new User;
+            $user->name = $request->get('name');
+            $user->username = $request->get('username');
+            $user->email = $request->get('email');
+            $user->password = Hash::make($request->get('password'));
+            $user->gambar = $image_name;
+            $user->role = $request->get('role');
+
+            $user -> save();
+            //User::create($request->all());
+            //jika data berhasil ditambahkan, akan kembali ke halaman utama
+            Alert::success('Success', 'Data User Barang Berhasil Ditambahkan');
+            return redirect()->route('user.index');
     }
 
     /**
@@ -69,7 +95,9 @@ class UserController extends Controller
      */
     public function show($id)
     {
-
+        //menampilkan detail data dengan menemukan berdasarkan id User
+        $user = User::find($id);
+        return view('User.show', compact('user'));
     }
 
     /**
@@ -80,7 +108,9 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-
+        //menampilkan detail data dengan menemukan berdasarkan id User untuk diedit
+        $user = User::find($id);
+        return view('User.edit', compact('user'));
     }
 
     /**
@@ -92,7 +122,41 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
+        //melakukan validasi data
+        $request->validate([
+            'name' => 'required',
+            'username' => 'required',
+            'email' => 'required',
+            'role' => 'required',
+            ]);
 
+        $user = User::find($id);
+
+        //fungsi eloquent untuk mengupdate data inputan kita
+        if ($request->file('gambar') == ''){
+            $user->name = $request->get('name');
+            $user->username = $request->get('username');
+            $user->email = $request->get('email');
+            $user->role = $request->get('role');
+            $user->save();
+        }
+        else {
+            if ($user->gambar && file_exists(storage_path('app/public/' .$user->gambar)))
+        {
+            \Storage::delete(['public/' . $user->gambar]);
+        }
+        $image_name = $request->file('gambar')->store('images', 'public');
+        $user->gambar = $image_name;
+        $user->name = $request->get('name');
+        $user->username = $request->get('username');
+        $user->email = $request->get('email');
+        $user->role = $request->get('role');
+        $user->save();
+        }
+
+        //jika data berhasil diupdate, akan kembali ke halaman utama
+        Alert::success('Success', 'Data User Berhasil Diupdate');
+        return redirect()->route('user.index');
     }
 
     /**
@@ -103,6 +167,16 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
+        //fungsi eloquent untuk menghapus data
+        User::find($id)->delete();
+        Alert::success('Success', 'Data user berhasil dihapus');
+        return redirect()->route('user.index');
+    }
 
+    public function laporan()
+    {
+        $user = User::all();
+        $pdf = PDF::loadview('User.laporan', compact('user'));
+        return $pdf->stream();
     }
 }
