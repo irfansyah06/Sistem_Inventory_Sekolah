@@ -179,4 +179,26 @@ class UserController extends Controller
         $pdf = PDF::loadview('User.laporan', compact('user'));
         return $pdf->stream();
     }
+
+    public function EditPassword($id)
+    {
+        $user = User::find($id);
+        return view('User.PasswordEdit', compact('user'));
+    }
+
+    public function UpdatePassword(Request $request, $id)
+    {
+        $request->validate([
+            'password' => 'required|string|min:5|confirmed',
+            'password_confirmation' => 'required',
+        ]);
+
+        $user = Auth::user();
+        $user = User::find($id);
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        Alert::success('Success', 'Password successfully changed!');
+            return redirect()->route('user.edit', $user->id);
+    }
 }
