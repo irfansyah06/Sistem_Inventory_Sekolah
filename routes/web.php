@@ -24,3 +24,6 @@ Route::get('/forgot-password', function () {
 Route::get('/', [HomeController::class,'index'])->name('home');
 
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::resource('kategori', KategoriController::class);
+Route::get('/laporan/kategori', [KategoriController::class, 'laporan']);
