@@ -30,3 +30,6 @@ Route::get('/laporan/kategori', [KategoriController::class, 'laporan']);
 
 Route::resource('barang', BarangController::class);
 Route::get('/laporan/barang', [BarangController::class, 'laporan']);
+
+Route::resource('supplier', SupplierController::class);
+Route::get('/laporan/supplier', [SupplierController::class, 'laporan']);
