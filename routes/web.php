@@ -33,3 +33,8 @@ Route::get('/laporan/barang', [BarangController::class, 'laporan']);
 
 Route::resource('supplier', SupplierController::class);
 Route::get('/laporan/supplier', [SupplierController::class, 'laporan']);
+
+Route::resource('user', UserController::class);
+Route::get('/laporan/user', [UserController::class, 'laporan']);
+Route::get('password/user/{id}', [UserController::class, 'EditPassword'])->name('user.edit.password');
+Route::post('password/user/{id}', [UserController::class, 'UpdatePassword'])->name('user.update.password');
