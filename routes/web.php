@@ -3,6 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\BarangController;
+use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\UserController;
 
 
 /*
