@@ -38,3 +38,9 @@ Route::resource('user', UserController::class);
 Route::get('/laporan/user', [UserController::class, 'laporan']);
 Route::get('password/user/{id}', [UserController::class, 'EditPassword'])->name('user.edit.password');
 Route::post('password/user/{id}', [UserController::class, 'UpdatePassword'])->name('user.update.password');
+
+Route::resource('profile', ProfileController::class);
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('password/{id}', [PasswordController::class, 'edit'])->name('edit.password');
+    Route::post('password/{id}', [PasswordController::class, 'update'])->name('update.password');
+});
