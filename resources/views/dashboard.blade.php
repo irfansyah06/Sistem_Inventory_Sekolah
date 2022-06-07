@@ -8,7 +8,7 @@
         </div>
         <div class="col-md-8">
             <h4 class="font-20 weight-500 mb-10 text-capitalize text-white">
-                Welcome To Sistem Inventroy Sekolah <div class="weight-600 font-30 text-blue">{{Auth::user()->name}}</div>
+                Welcome To Sistem Inventory Sekolah <div class="weight-600 font-30 text-blue">{{Auth::user()->name}}</div>
             </h4>
             <p class="font-18 max-width-600 text-white">Semua hal akan lebih mudah, praktis, dan efisien dengan menggunakan sistem.
                 Lindungi barang fasilitas sekolah kita dengan pendataan yang terstruktur dalam Sistem Inventory Sekolah ! ! !</p>
