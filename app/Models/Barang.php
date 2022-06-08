@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Kategori;
-
+use App\Models\BarangKeluar;
+use App\Models\BarangMasuk;
 
 class Barang extends Model
 {
@@ -29,6 +30,14 @@ class Barang extends Model
     public function kategori()
     {
         return $this->belongsTo(Kategori::class, 'id_kategori');
+    }
+    public function BarangKeluar()
+    {
+        return $this->hasMany(BarangKeluar::class);
+    }
+    public function BarangMasuk()
+    {
+        return $this->hasMany(BarangMasuk::class);
     }
     public function supplier()
     {
