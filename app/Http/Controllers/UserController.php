@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use RealRashid\SweetAlert\Facades\Alert;
 use PDF;
+use Illuminate\Support\Facades\Storage;
 class UserController extends Controller
 {
     /**
@@ -143,7 +144,7 @@ class UserController extends Controller
         else {
             if ($user->gambar && file_exists(storage_path('app/public/' .$user->gambar)))
         {
-            \Storage::delete(['public/' . $user->gambar]);
+            Storage::delete(['public/' . $user->gambar]);
         }
         $image_name = $request->file('gambar')->store('images', 'public');
         $user->gambar = $image_name;
