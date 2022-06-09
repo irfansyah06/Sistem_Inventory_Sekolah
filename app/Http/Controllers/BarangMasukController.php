@@ -74,7 +74,29 @@ class BarangMasukController extends Controller
      */
     public function store(Request $request)
     {
+        $this->validate($request, [
+            'kode_masuk' => 'required',
+            'id_keluar' => 'required',
+            'id_barang' => 'required',
+            'jumlah_masuk' => 'required',
+            'tgl_masuk' => 'required',
+        ]);
 
+        //fungsi eloquent untuk menambah data
+        $masuk = BarangMasuk::create($request->all());
+
+        $masuk->barang->where('id', $masuk->id_barang)
+                        ->update([
+                            'jumlah_barang' => ($masuk->barang->jumlah_barang + ($masuk->jumlah_masuk)),
+                        ]);
+
+        $masuk->BarangKeluar->where('kode', $masuk->id_keluar)
+                        ->update([
+                            'jumlah' => ($masuk->BarangKeluar->jumlah - ($masuk->jumlah_masuk)),
+                        ]);
+
+        alert()->success('Berhasil.','Data telah ditambahkan!');
+        return redirect()->route('BarangMasuk.index');
     }
 
     /**
@@ -85,7 +107,9 @@ class BarangMasukController extends Controller
      */
     public function show($kode_masuk)
     {
-
+        //menampilkan detail data dengan menemukan berdasarkan id BarangMasuk
+        $masuk = BarangMasuk::with('BarangKeluar')->find($kode_masuk);
+        return view('BarangMasuk.show', compact('masuk'));
     }
 
     /**
@@ -96,7 +120,9 @@ class BarangMasukController extends Controller
      */
     public function edit($kode_masuk)
     {
-
+        $masuk = BarangMasuk::with('BarangKeluar')->find($kode_masuk);
+        $keluar = BarangKeluar::all();
+        return view('BarangMasuk.edit', compact('masuk', 'keluar'));
     }
 
     /**
@@ -109,7 +135,39 @@ class BarangMasukController extends Controller
     public function update(Request $request, $kode_masuk)
     {
 
+        $request->validate([
+            'id_keluar' => 'required',
+            'id_barang' => 'required',
+            'jumlah_masuk' => 'required',
+            'tgl_masuk' => 'required',
 
+        ]);
+
+        //fungsi eloquent untuk mengupdate data inputan kita
+        $masuk = BarangMasuk::with('BarangKeluar')->where('kode_masuk', $kode_masuk)->first();
+        $masuk->tgl_masuk = $request->get('tgl_masuk');
+        $keluar = BarangKeluar::find($request->get('id_keluar'));
+        //fungsi eloquent untuk menambah data dengan relasi belongsTo
+        $masuk->BarangKeluar()->associate($keluar);
+        $barang = Barang::find($request->get('id_barang'));
+        //fungsi eloquent untuk menambah data dengan relasi belongsTo
+        $masuk->barang()->associate($barang);
+        $jumlah_masuk = $request->get('jumlah_masuk');
+        if($masuk->jumlah_masuk != $jumlah_masuk) {
+            $masuk->BarangKeluar->where('kode', $masuk->id_keluar)
+                    ->update([
+                        'jumlah' => ($masuk->BarangKeluar->jumlah - ($jumlah_masuk - $masuk->jumlah_masuk)),
+                    ]);
+            $masuk->barang->where('id', $masuk->id_barang)
+                    ->update([
+                        'jumlah_barang' => ($masuk->barang->jumlah_barang + ($jumlah_masuk - $masuk->jumlah_masuk)),
+                    ]);
+        }
+        $masuk->jumlah_masuk = $request->get('jumlah_masuk');
+        $masuk->save();
+
+        alert()->success('Berhasil.','Data telah diupdate!');
+        return redirect()->route('BarangMasuk.index');
     }
 
     /**
@@ -120,7 +178,15 @@ class BarangMasukController extends Controller
      */
     public function destroy($kode_masuk)
     {
-
+        BarangMasuk::find($kode_masuk)->delete();
+        Alert::success('Success', 'Data Barang Masuk berhasil dihapus');
+        return redirect()->route('BarangMasuk.index');
     }
 
+    public function laporan()
+    {
+        $masuk = BarangMasuk::all();
+        $pdf = PDF::loadview('BarangMasuk.laporan', compact('masuk'));
+        return $pdf->stream();
+    }
 }
