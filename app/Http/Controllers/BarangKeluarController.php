@@ -74,7 +74,35 @@ class BarangKeluarController extends Controller
      */
     public function store(Request $request)
     {
-        
+        $this->validate($request, [
+            'kode' => 'required',
+            'id_barang' => 'required',
+            'jumlah' => 'required',
+            'penanggung_jawab' => 'required',
+            'tgl_keluar' => 'required',
+
+        ]);
+        $keluar = new BarangKeluar;
+        $keluar->kode = $request->get('kode');
+        $keluar->id_barang = $request->get('id_barang');
+        $keluar->jumlah = $request->get('jumlah');
+        $keluar->penanggung_jawab = $request->get('penanggung_jawab');
+        $keluar->tgl_keluar = $request->get('tgl_keluar');
+
+        $jumlah = $request->get('jumlah');
+        if ($jumlah > $keluar->barang->jumlah_barang) {
+            alert()->error('Error.','Jumlah yang anda masukkan melebihi stok barang!');
+            return redirect()->route('BarangKeluar.create');
+        } else {
+            $keluar->save();
+            $keluar->barang->where('id', $keluar->id_barang)
+                            ->update([
+                                'jumlah_barang' => ($keluar->barang->jumlah_barang - ($keluar->jumlah)),
+                                ]);
+
+            alert()->success('Berhasil.','Data telah ditambahkan!');
+            return redirect()->route('BarangKeluar.index');
+        }
     }
 
     /**
@@ -86,7 +114,9 @@ class BarangKeluarController extends Controller
     public function show($kode)
     {
         //menampilkan detail data dengan menemukan berdasarkan kode BarangKeluar
-        
+        $keluar = BarangKeluar::with('barang')->find($kode);
+        $barang = Barang::all();
+        return view('BarangKeluar.show', compact('keluar'));
     }
 
     /**
@@ -97,7 +127,9 @@ class BarangKeluarController extends Controller
      */
     public function edit($kode)
     {
-        
+        $keluar = BarangKeluar::with('barang')->find($kode);
+        $barang = Barang::all();
+        return view('BarangKeluar.edit', compact('keluar', 'barang'));
     }
 
     /**
@@ -109,7 +141,39 @@ class BarangKeluarController extends Controller
      */
     public function update(Request $request, $kode)
     {
-        
+        $request->validate([
+            'id_barang' => 'required',
+            'jumlah' => 'required',
+            'penanggung_jawab' => 'required',
+            'tgl_keluar' => 'required',
+
+        ]);
+
+        //fungsi eloquent untuk mengupdate data inputan kita
+        $keluar = BarangKeluar::with('barang')->where('kode', $kode)->first();
+        // $keluar = BarangKeluar::find($kode)->update($request->all());
+
+        $keluar->penanggung_jawab = $request->get('penanggung_jawab');
+        $keluar->tgl_keluar = $request->get('tgl_keluar');
+        $barang = Barang::find($request->get('id_barang'));
+        //fungsi eloquent untuk menambah data dengan relasi belongsTo
+        $keluar->barang()->associate($barang);
+        $jumlah = $request->get('jumlah');
+
+        if (($jumlah-$keluar->jumlah) > $keluar->barang->jumlah_barang) {
+            alert()->error('Error.','Jumlah yang anda masukkan melebihi stok barang!');
+            return redirect()->route('BarangKeluar.edit',$keluar->kode);
+        }else {
+            $keluar->barang->where('id', $keluar->id_barang)
+                    ->update([
+                        'jumlah_barang' => ($keluar->barang->jumlah_barang - ($jumlah - $keluar->jumlah)),
+                    ]);
+        }
+        $keluar->jumlah = $request->get('jumlah');
+        $keluar->save();
+
+        alert()->success('Berhasil.','Data telah diupdate!');
+        return redirect()->route('BarangKeluar.index');
     }
 
     /**
@@ -120,11 +184,16 @@ class BarangKeluarController extends Controller
      */
     public function destroy($kode)
     {
-       
+        BarangKeluar::find($kode)->delete();
+        Alert::success('Success', 'Data Barang Keluar berhasil dihapus');
+        return redirect()->route('BarangKeluar.index');
     }
 
     public function laporan()
     {
-        
+        $keluar = BarangKeluar::all();
+        $barang = Barang::all();
+        $pdf = PDF::loadview('BarangKeluar.laporan', compact('keluar', 'barang'));
+        return $pdf->stream();
     }
 }
