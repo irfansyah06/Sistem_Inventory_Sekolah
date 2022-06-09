@@ -6,6 +6,8 @@ use App\Models\Barang;
 use App\Models\Kategori;
 use App\Models\Supplier;
 use App\Models\User;
+use App\Models\BarangKeluar;
+use App\Models\BarangMasuk;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -31,7 +33,9 @@ class HomeController extends Controller
         $barang         = Barang::get();
         $supplier       = Supplier::get();
         $user           = User::get();
+        $BarangKeluar   = BarangKeluar::get();
+        $BarangMasuk    = BarangMasuk::get();
 
-        return view('dashboard', compact('kategori', 'barang', 'supplier', 'user'));
+        return view('dashboard', compact('kategori', 'barang', 'supplier', 'user', 'BarangKeluar', 'BarangMasuk'));
     }
 }
