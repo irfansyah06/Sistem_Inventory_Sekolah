@@ -45,6 +45,9 @@ Route::get('/laporan/user', [UserController::class, 'laporan']);
 Route::get('password/user/{id}', [UserController::class, 'EditPassword'])->name('user.edit.password');
 Route::post('password/user/{id}', [UserController::class, 'UpdatePassword'])->name('user.update.password');
 
+Route::resource('BarangKeluar', BarangKeluarController::class);
+Route::get('/laporan/BarangKeluar', [BarangKeluarController::class, 'laporan']);
+
 Route::resource('profile', ProfileController::class);
 Route::group(['middleware' => 'auth'], function () {
     Route::get('password/{id}', [PasswordController::class, 'edit'])->name('edit.password');
