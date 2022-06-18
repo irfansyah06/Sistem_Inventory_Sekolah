@@ -27,7 +27,7 @@ class BarangController extends Controller
     public function index(Request $request)
     {
         $search = $request->search;
-        if($request->has('search')){ // Pemilihan jika ingin melakukan pencarian
+        if($request->has('search')){ 
             $barang = Barang::where('kode_barang', 'like', "%" . $search . "%")
             ->orwhere('nama_barang', 'like', "%" . $search . "%")
             ->orwhere('jumlah_barang', 'like', "%" . $search . "%")
@@ -36,9 +36,8 @@ class BarangController extends Controller
             })
             ->paginate();
             return view('Barang.index', compact('barang'))->with('i', (request()->input('page', 1) - 1) * 5);
-        } else { // Pemilihan jika tidak melakukan pencarian
-            //fungsi eloquent menampilkan data menggunakan pagination
-            $barang = Barang::with('kategori')->paginate(10); // Pagination menampilkan 5 data
+        } else { 
+            $barang = Barang::with('kategori')->paginate(10); 
         }
         return view('Barang.index', compact('barang'));
     }
@@ -73,7 +72,6 @@ class BarangController extends Controller
             return redirect()->to('/barang');
         }
 
-        //melakukan validasi data
         $request->validate([
             'kode_barang' => 'required',
             'nama_barang' => 'required',
@@ -96,12 +94,10 @@ class BarangController extends Controller
             $barang->gambar = $image_name;
             $barang->jumlah_barang = $request->get('jumlah_barang');
 
-            //fungsi eloquent untuk menambah data dengan relasi belongsTo
             $barang->kategori()->associate($kategori);
             $barang->supplier()->associate($supplier);
             $barang->save();
 
-            //jika data berhasil ditambahkan, akan kembali ke halaman utama
             Alert::success('Success', 'Data Barang Berhasil Ditambahkan');
             return redirect()->route('barang.index');
 
@@ -175,7 +171,7 @@ class BarangController extends Controller
 
             $kategori = Kategori::find($request->get('id_kategori'));
             $supplier = Supplier::find($request->get('id_supplier'));
-            //fungsi eloquent untuk menambah data dengan relasi belongsTo
+
             $barang->kategori()->associate($kategori);
             $barang->supplier()->associate($supplier);
             $barang->save();
@@ -193,13 +189,12 @@ class BarangController extends Controller
 
             $kategori = Kategori::find($request->get('id_kategori'));
             $supplier = Supplier::find($request->get('id_supplier'));
-            //fungsi eloquent untuk menambah data dengan relasi belongsTo
+
             $barang->kategori()->associate($kategori);
             $barang->supplier()->associate($supplier);
             $barang->save();
         }
 
-        //jika data berhasil ditambahkan, akan kembali ke halaman utama
         Alert::success('Success', 'Data Barang Berhasil Diedit');
         return redirect()->route('barang.index');
     }

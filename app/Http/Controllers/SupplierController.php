@@ -26,7 +26,7 @@ class SupplierController extends Controller
 
     public function index(Request $request)
     {
-        if($request->has('search')){ // Pemilihan jika ingin melakukan pencarian
+        if($request->has('search')){ 
             $supplier = Supplier::where('kode', 'like', "%" . $request->search . "%")
             ->orwhere('nama', 'like', "%" . $request->search . "%")
             ->orwhere('alamat', 'like', "%" . $request->search . "%")
@@ -35,9 +35,8 @@ class SupplierController extends Controller
             ->orwhere('penyedia', 'like', "%" . $request->search . "%")
             ->paginate();
             return view('Supplier.index', compact('supplier'))->with('i', (request()->input('page', 1) - 1) * 5);
-        } else { // Pemilihan jika tidak melakukan pencarian
-            //fungsi eloquent menampilkan data menggunakan pagination
-            $supplier = Supplier::paginate(10); // MenPagination menampilkan 5 data
+        } else { 
+            $supplier = Supplier::paginate(10); 
             return view('Supplier.index', compact('supplier'));
         }
     }
@@ -70,7 +69,7 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
-        //melakukan validasi data
+
         $request->validate([
             'kode' => 'required',
             'nama' => 'required',
@@ -80,10 +79,8 @@ class SupplierController extends Controller
             'penyedia' => 'required',
             ]);
 
-            //fungsi eloquent untuk menambah data
             Supplier::create($request->all());
 
-            //jika data berhasil ditambahkan, akan kembali ke halaman utama
             Alert::success('Success', 'Data Supplier Berhasil Ditambahkan');
             return redirect()->route('supplier.index');
     }
@@ -96,7 +93,7 @@ class SupplierController extends Controller
      */
     public function show($kode)
     {
-        //menampilkan detail data dengan menemukan berdasarkan kode supplier
+  
         $supplier = Supplier::find($kode);
         return view('Supplier.show', compact('supplier'));
     }
@@ -109,7 +106,6 @@ class SupplierController extends Controller
      */
     public function edit($kode)
     {
-        //menampilkan detail data dengan menemukan berdasarkan kode supplier untuk diedit
         $supplier = Supplier::find($kode);
         return view('Supplier.edit', compact('supplier'));
     }
@@ -123,7 +119,6 @@ class SupplierController extends Controller
      */
     public function update(Request $request, $kode)
     {
-        //melakukan validasi data
         $request->validate([
             'kode' => 'required',
             'nama' => 'required',
@@ -132,11 +127,8 @@ class SupplierController extends Controller
             'kota' => 'required',
             'penyedia' => 'required',
             ]);
-
-        //fungsi eloquent untuk mengupdate data inputan kita
             Supplier::find($kode)->update($request->all());
 
-        //jika data berhasil diupdate, akan kembali ke halaman utama
             Alert::success('Success', 'Data Supplier Berhasil Diupdate');
             return redirect()->route('supplier.index');
     }
@@ -149,7 +141,6 @@ class SupplierController extends Controller
      */
     public function destroy($kode)
     {
-        //fungsi eloquent untuk menghapus data
         Supplier::find($kode)->delete();
         Alert::success('Success', 'Data Supplier Berhasil Dihapus');
         return redirect()->route('supplier.index');

@@ -28,15 +28,14 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        if($request->has('search')){ // Pemilihan jika ingin melakukan pencarian
+        if($request->has('search')){ 
             $user = User::where('name', 'like', "%" . $request->search . "%")
             ->orwhere('email', 'like', "%" . $request->search . "%")
             ->orwhere('role', 'like', "%" . $request->search . "%")
             ->paginate();
             return view('User.index', compact('user'))->with('i', (request()->input('page', 1) - 1) * 5);
-        } else { // Pemilihan jika tidak melakukan pencarian
-            //fungsi eloquent menampilkan data menggunakan pagination
-            $user = User::paginate(10); // MenPagination menampilkan 5 data
+        } else { 
+            $user = User::paginate(10);
             return view('User.index', compact('user'));
         }
     }
@@ -58,7 +57,6 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //melakukan validasi data
         $request->validate([
             'name' => 'required',
             'username' => 'required',
@@ -72,7 +70,6 @@ class UserController extends Controller
                 $image_name = $request->file('gambar')->store('images', 'public');
             }
 
-            //fungsi eloquent untuk menambah data
             $user = new User;
             $user->name = $request->get('name');
             $user->username = $request->get('username');
@@ -82,8 +79,6 @@ class UserController extends Controller
             $user->role = $request->get('role');
 
             $user -> save();
-            //User::create($request->all());
-            //jika data berhasil ditambahkan, akan kembali ke halaman utama
             Alert::success('Success', 'Data User Barang Berhasil Ditambahkan');
             return redirect()->route('user.index');
     }
@@ -96,7 +91,6 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //menampilkan detail data dengan menemukan berdasarkan id User
         $user = User::find($id);
         return view('User.show', compact('user'));
     }
@@ -109,7 +103,6 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        //menampilkan detail data dengan menemukan berdasarkan id User untuk diedit
         $user = User::find($id);
         return view('User.edit', compact('user'));
     }
@@ -123,7 +116,6 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //melakukan validasi data
         $request->validate([
             'name' => 'required',
             'username' => 'required',
@@ -133,7 +125,6 @@ class UserController extends Controller
 
         $user = User::find($id);
 
-        //fungsi eloquent untuk mengupdate data inputan kita
         if ($request->file('gambar') == ''){
             $user->name = $request->get('name');
             $user->username = $request->get('username');
@@ -155,7 +146,6 @@ class UserController extends Controller
         $user->save();
         }
 
-        //jika data berhasil diupdate, akan kembali ke halaman utama
         Alert::success('Success', 'Data User Berhasil Diupdate');
         return redirect()->route('user.index');
     }
@@ -168,7 +158,6 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //fungsi eloquent untuk menghapus data
         User::find($id)->delete();
         Alert::success('Success', 'Data user berhasil dihapus');
         return redirect()->route('user.index');

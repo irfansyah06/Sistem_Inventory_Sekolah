@@ -29,7 +29,7 @@ class BarangMasukController extends Controller
     public function index(Request $request)
     {
         $search = $request->search;
-        if($request->has('search')){ // Pemilihan jika ingin melakukan pencarian
+        if($request->has('search')){ 
             $masuk = BarangMasuk::where('kode_masuk', 'like', "%" . $search . "%")
             ->orwhere('jumlah_masuk', 'like', "%" . $search . "%")
             ->orwhere('tgl_masuk', 'like', "%" . $search . "%")
@@ -38,9 +38,8 @@ class BarangMasukController extends Controller
             })
             ->paginate();
             return view('BarangMasuk.index', compact('masuk'))->with('i', (request()->input('page', 1) - 1) * 5);
-        } else { // Pemilihan jika tidak melakukan pencarian
-            //fungsi eloquent menampilkan data menggunakan pagination
-            $masuk = BarangMasuk::with('BarangKeluar')->paginate(10); // Pagination menampilkan 5 data
+        } else { 
+            $masuk = BarangMasuk::with('BarangKeluar')->paginate(10); 
             return view('BarangMasuk.index', compact('masuk'));
         }
     }
@@ -82,7 +81,7 @@ class BarangMasukController extends Controller
             'tgl_masuk' => 'required',
         ]);
 
-        //fungsi eloquent untuk menambah data
+     
         $masuk = BarangMasuk::create($request->all());
 
         $masuk->barang->where('id', $masuk->id_barang)
@@ -107,7 +106,7 @@ class BarangMasukController extends Controller
      */
     public function show($kode_masuk)
     {
-        //menampilkan detail data dengan menemukan berdasarkan id BarangMasuk
+        
         $masuk = BarangMasuk::with('BarangKeluar')->find($kode_masuk);
         return view('BarangMasuk.show', compact('masuk'));
     }
@@ -143,14 +142,14 @@ class BarangMasukController extends Controller
 
         ]);
 
-        //fungsi eloquent untuk mengupdate data inputan kita
+    
         $masuk = BarangMasuk::with('BarangKeluar')->where('kode_masuk', $kode_masuk)->first();
         $masuk->tgl_masuk = $request->get('tgl_masuk');
         $keluar = BarangKeluar::find($request->get('id_keluar'));
-        //fungsi eloquent untuk menambah data dengan relasi belongsTo
+
         $masuk->BarangKeluar()->associate($keluar);
         $barang = Barang::find($request->get('id_barang'));
-        //fungsi eloquent untuk menambah data dengan relasi belongsTo
+
         $masuk->barang()->associate($barang);
         $jumlah_masuk = $request->get('jumlah_masuk');
         if($masuk->jumlah_masuk != $jumlah_masuk) {

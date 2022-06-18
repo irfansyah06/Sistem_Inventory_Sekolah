@@ -28,7 +28,7 @@ class BarangKeluarController extends Controller
     public function index(Request $request)
     {
         $search = $request->search;
-        if($request->has('search')){ // Pemilihan jika ingin melakukan pencarian
+        if($request->has('search')){ 
             $keluar = BarangKeluar::where('kode', 'like', "%" . $search . "%")
             ->orwhere('jumlah', 'like', "%" . $search . "%")
             ->orwhere('penanggung_jawab', 'like', "%" . $search . "%")
@@ -38,9 +38,8 @@ class BarangKeluarController extends Controller
             })
             ->paginate();
             return view('BarangKeluar.index', compact('keluar'))->with('i', (request()->input('page', 1) - 1) * 5);
-        } else { // Pemilihan jika tidak melakukan pencarian
-            //fungsi eloquent menampilkan data menggunakan pagination
-            $keluar = BarangKeluar::with('barang')->paginate(10); // Pagination menampilkan 5 data
+        } else { 
+            $keluar = BarangKeluar::with('barang')->paginate(10); 
             return view('BarangKeluar.index', compact('keluar'));
         }
     }
@@ -113,7 +112,6 @@ class BarangKeluarController extends Controller
      */
     public function show($kode)
     {
-        //menampilkan detail data dengan menemukan berdasarkan kode BarangKeluar
         $keluar = BarangKeluar::with('barang')->find($kode);
         $barang = Barang::all();
         return view('BarangKeluar.show', compact('keluar'));
@@ -149,14 +147,13 @@ class BarangKeluarController extends Controller
 
         ]);
 
-        //fungsi eloquent untuk mengupdate data inputan kita
         $keluar = BarangKeluar::with('barang')->where('kode', $kode)->first();
-        // $keluar = BarangKeluar::find($kode)->update($request->all());
+
 
         $keluar->penanggung_jawab = $request->get('penanggung_jawab');
         $keluar->tgl_keluar = $request->get('tgl_keluar');
         $barang = Barang::find($request->get('id_barang'));
-        //fungsi eloquent untuk menambah data dengan relasi belongsTo
+
         $keluar->barang()->associate($barang);
         $jumlah = $request->get('jumlah');
 

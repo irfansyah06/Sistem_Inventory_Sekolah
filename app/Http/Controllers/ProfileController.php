@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
-
+use Illuminate\Support\Facades\Storage;
 class ProfileController extends Controller
 {
     /**
@@ -25,7 +25,7 @@ class ProfileController extends Controller
      */
     public function show($id)
     {
-        //menampilkan detail data dengan menemukan berdasarkan id User
+        
         $user = User::find($id);
         return view('Profile.show', compact('user'));
     }
@@ -38,7 +38,7 @@ class ProfileController extends Controller
      */
     public function edit($id)
     {
-        //menampilkan detail data dengan menemukan berdasarkan id User untuk diedit
+        
         $user = User::find($id);
         return view('Profile.edit', compact('user'));
     }
@@ -52,7 +52,7 @@ class ProfileController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //melakukan validasi data
+        
         $request->validate([
             'name' => 'required',
             'username' => 'required',
@@ -62,7 +62,7 @@ class ProfileController extends Controller
 
             $user = User::find($id);
 
-            //fungsi eloquent untuk mengupdate data inputan kita
+            
             if ($request->file('gambar') == ''){
                 $user->name = $request->get('name');
                 $user->username = $request->get('username');
@@ -73,7 +73,7 @@ class ProfileController extends Controller
             else {
                 if ($user->gambar && file_exists(storage_path('app/public/' .$user->gambar)))
             {
-                \Storage::delete(['public/' . $user->gambar]);
+                Storage::delete(['public/' . $user->gambar]);
             }
             $image_name = $request->file('gambar')->store('images', 'public');
             $user->gambar = $image_name;
@@ -84,7 +84,6 @@ class ProfileController extends Controller
             $user->save();
             }
 
-        //jika data berhasil diupdate, akan kembali ke halaman utama
         Alert::success('Success', 'Data User Berhasil Diupdate');
         return redirect()->route('home');
     }
