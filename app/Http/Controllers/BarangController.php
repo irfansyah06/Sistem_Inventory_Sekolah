@@ -27,17 +27,15 @@ class BarangController extends Controller
     public function index(Request $request)
     {
         $search = $request->search;
-        if($request->has('search')){ 
+        if($request->has('search')){
             $barang = Barang::where('kode_barang', 'like', "%" . $search . "%")
             ->orwhere('nama_barang', 'like', "%" . $search . "%")
             ->orwhere('jumlah_barang', 'like', "%" . $search . "%")
             ->orWhereHas('kategori', function($query) use($search) {
                 return $query->where('nama_kategori', 'like', "%" . $search . "%");
-            })
-            ->paginate();
-            return view('Barang.index', compact('barang'))->with('i', (request()->input('page', 1) - 1) * 5);
-        } else { 
-            $barang = Barang::with('kategori')->paginate(10); 
+            });
+        } else {
+            $barang = Barang::with('kategori')->paginate(10);
         }
         return view('Barang.index', compact('barang'));
     }

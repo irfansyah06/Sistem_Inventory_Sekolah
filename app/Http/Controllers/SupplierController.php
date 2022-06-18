@@ -26,7 +26,7 @@ class SupplierController extends Controller
 
     public function index(Request $request)
     {
-        if($request->has('search')){ 
+        if($request->has('search')){
             $supplier = Supplier::where('kode', 'like', "%" . $request->search . "%")
             ->orwhere('nama', 'like', "%" . $request->search . "%")
             ->orwhere('alamat', 'like', "%" . $request->search . "%")
@@ -34,9 +34,9 @@ class SupplierController extends Controller
             ->orwhere('kota', 'like', "%" . $request->search . "%")
             ->orwhere('penyedia', 'like', "%" . $request->search . "%")
             ->paginate();
-            return view('Supplier.index', compact('supplier'))->with('i', (request()->input('page', 1) - 1) * 5);
-        } else { 
-            $supplier = Supplier::paginate(10); 
+            return view('Supplier.index', compact('supplier'));
+        } else {
+            $supplier = Supplier::paginate(10);
             return view('Supplier.index', compact('supplier'));
         }
     }
@@ -93,7 +93,7 @@ class SupplierController extends Controller
      */
     public function show($kode)
     {
-  
+
         $supplier = Supplier::find($kode);
         return view('Supplier.show', compact('supplier'));
     }

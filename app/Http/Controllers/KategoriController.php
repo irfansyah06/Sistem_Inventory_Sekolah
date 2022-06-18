@@ -31,9 +31,9 @@ class KategoriController extends Controller
             ->orwhere('nama_kategori', 'like', "%" . $request->search . "%")
             ->orwhere('keterangan', 'like', "%" . $request->search . "%")
             ->paginate();
-            return view('Kategori.index', compact('kategori'))->with('i', (request()->input('page', 1) - 1) * 5);
-        } else { 
-            $kategori = Kategori::paginate(10); 
+            return view('Kategori.index', compact('kategori'));
+        } else {
+            $kategori = Kategori::paginate(10);
             return view('Kategori.index', compact('kategori'));
         }
     }
@@ -62,10 +62,10 @@ class KategoriController extends Controller
             'nama_kategori' => 'required',
             ]);
 
-            
+
             Kategori::create($request->all());
 
-            
+
             Alert::success('Success', 'Data Kategori Barang Berhasil Ditambahkan');
             return redirect()->route('kategori.index');
     }
@@ -78,7 +78,7 @@ class KategoriController extends Controller
      */
     public function show($id)
     {
-        
+
         $kategori = Kategori::find($id);
         return view('Kategori.show', compact('kategori'));
     }
@@ -91,7 +91,7 @@ class KategoriController extends Controller
      */
     public function edit($id)
     {
-        
+
         $kategori = Kategori::find($id);
         return view('Kategori.edit', compact('kategori'));
     }
@@ -105,17 +105,17 @@ class KategoriController extends Controller
      */
     public function update(Request $request, $id)
     {
-      
+
         $request->validate([
             'kode_kategori' => 'required',
             'nama_kategori' => 'required',
             'keterangan' => 'required',
             ]);
 
-        
+
             Kategori::find($id)->update($request->all());
 
-      
+
             Alert::success('Success', 'Data Kategori Barang Berhasil Diupdate');
             return redirect()->route('kategori.index');
     }
@@ -128,7 +128,7 @@ class KategoriController extends Controller
      */
     public function destroy($id)
     {
-      
+
         Kategori::find($id)->delete();
         Alert::success('Success', 'Data kategori berhasil dihapus');
         return redirect()->route('kategori.index');

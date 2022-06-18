@@ -28,18 +28,16 @@ class BarangKeluarController extends Controller
     public function index(Request $request)
     {
         $search = $request->search;
-        if($request->has('search')){ 
+        if($request->has('search')){
             $keluar = BarangKeluar::where('kode', 'like', "%" . $search . "%")
             ->orwhere('jumlah', 'like', "%" . $search . "%")
             ->orwhere('penanggung_jawab', 'like', "%" . $search . "%")
             ->orwhere('tgl_keluar', 'like', "%" . $search . "%")
             ->orWhereHas('barang', function($query) use($search) {
                 return $query->where('nama_barang', 'like', "%" . $search . "%");
-            })
-            ->paginate();
-            return view('BarangKeluar.index', compact('keluar'))->with('i', (request()->input('page', 1) - 1) * 5);
-        } else { 
-            $keluar = BarangKeluar::with('barang')->paginate(10); 
+            });
+        } else {
+            $keluar = BarangKeluar::with('barang')->paginate(10);
             return view('BarangKeluar.index', compact('keluar'));
         }
     }

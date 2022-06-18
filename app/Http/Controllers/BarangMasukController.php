@@ -29,17 +29,15 @@ class BarangMasukController extends Controller
     public function index(Request $request)
     {
         $search = $request->search;
-        if($request->has('search')){ 
+        if($request->has('search')){
             $masuk = BarangMasuk::where('kode_masuk', 'like', "%" . $search . "%")
             ->orwhere('jumlah_masuk', 'like', "%" . $search . "%")
             ->orwhere('tgl_masuk', 'like', "%" . $search . "%")
             ->orWhereHas('barang', function($query) use($search) {
                 return $query->where('nama_barang', 'like', "%" . $search . "%");
-            })
-            ->paginate();
-            return view('BarangMasuk.index', compact('masuk'))->with('i', (request()->input('page', 1) - 1) * 5);
-        } else { 
-            $masuk = BarangMasuk::with('BarangKeluar')->paginate(10); 
+            });
+        } else {
+            $masuk = BarangMasuk::with('BarangKeluar')->paginate(10);
             return view('BarangMasuk.index', compact('masuk'));
         }
     }
@@ -81,7 +79,7 @@ class BarangMasukController extends Controller
             'tgl_masuk' => 'required',
         ]);
 
-     
+
         $masuk = BarangMasuk::create($request->all());
 
         $masuk->barang->where('id', $masuk->id_barang)
@@ -106,7 +104,7 @@ class BarangMasukController extends Controller
      */
     public function show($kode_masuk)
     {
-        
+
         $masuk = BarangMasuk::with('BarangKeluar')->find($kode_masuk);
         return view('BarangMasuk.show', compact('masuk'));
     }
@@ -142,7 +140,7 @@ class BarangMasukController extends Controller
 
         ]);
 
-    
+
         $masuk = BarangMasuk::with('BarangKeluar')->where('kode_masuk', $kode_masuk)->first();
         $masuk->tgl_masuk = $request->get('tgl_masuk');
         $keluar = BarangKeluar::find($request->get('id_keluar'));
